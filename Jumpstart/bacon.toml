@@ -1,0 +1,26 @@
+#:schema https://dystroy.org/bacon/.bacon.schema.json
+# Plain cargo on purpose: no codegen backend, wrapper or RUSTFLAGS overrides here.
+# Build settings live in the Cargo.toml profiles, so these jobs share build artifacts
+# with dx, rust-analyzer and agents. Keep CLAUDE.md in sync when changing jobs.
+env.CARGO_TERM_COLOR = "always"
+default_job = "clippy"
+
+[jobs.clippy]
+command = ["cargo", "clippy"]
+need_stdout = false
+{% if is_fullstack %}
+[jobs.clippy-server]
+command = ["cargo", "clippy", "--no-default-features", "--features", "server"]
+need_stdout = false
+{% endif %}
+[jobs.test]
+command = ["cargo", "nextest", "run", "--hide-progress-bar", "--failure-output", "final"]
+need_stdout = true
+analyzer = "nextest"
+
+[keybindings]
+c = "job:clippy"
+{%- if is_fullstack %}
+s = "job:clippy-server"
+{%- endif %}
+t = "job:test"

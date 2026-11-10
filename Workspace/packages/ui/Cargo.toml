@@ -11,3 +11,6 @@ api = { workspace = true }
 [features]
 server = ["api/server"]
 {%- endif %}
+
+[lints]
+workspace = true

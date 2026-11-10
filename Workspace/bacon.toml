@@ -1,0 +1,36 @@
+#:schema https://dystroy.org/bacon/.bacon.schema.json
+# Plain cargo on purpose: no codegen backend, wrapper or RUSTFLAGS overrides here.
+# Build settings live in the Cargo.toml profiles, so these jobs share build artifacts
+# with dx, rust-analyzer and agents. Keep CLAUDE.md in sync when changing jobs.
+env.CARGO_TERM_COLOR = "always"
+default_job = "{% if is_fullstack %}clippy-server{% else %}clippy-web{% endif %}"
+{% if is_fullstack %}
+[jobs.clippy-server]
+command = ["cargo", "clippy", "--package", "web", "--features", "server"]
+need_stdout = false
+{% endif %}
+[jobs.clippy-web]
+command = ["cargo", "clippy", "--package", "web", "--features", "web"]
+need_stdout = false
+
+[jobs.clippy-desktop]
+command = ["cargo", "clippy", "--package", "desktop", "--features", "desktop"]
+need_stdout = false
+
+[jobs.clippy-mobile]
+command = ["cargo", "clippy", "--package", "mobile", "--features", "mobile"]
+need_stdout = false
+
+[jobs.test]
+command = ["cargo", "nextest", "run", "--hide-progress-bar", "--failure-output", "final"]
+need_stdout = true
+analyzer = "nextest"
+
+[keybindings]
+{%- if is_fullstack %}
+s = "job:clippy-server"
+{%- endif %}
+c = "job:clippy-web"
+d = "job:clippy-desktop"
+m = "job:clippy-mobile"
+t = "job:test"

@@ -13,3 +13,6 @@ mobile = ["dioxus/mobile"]
 {% if is_fullstack -%}
 server = ["dioxus/server", "ui/server"]
 {%- endif %}
+
+[lints]
+workspace = true
